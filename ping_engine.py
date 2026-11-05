@@ -1,4 +1,6 @@
 from ping3 import ping
+import platform
+import re
 import subprocess
 import config
 def check_host(ip):
@@ -8,15 +10,19 @@ def check_host(ip):
     """
     try:
         response_time = ping(ip, timeout=config.PING_TIMEOUT, unit='ms')
-        return response_time
+        # ping3 returns False (not None) when the OS reports an error.
+        return None if response_time is False else response_time
     except PermissionError:
-        # Fallback to system ping command (no admin required)
+        # Fallback to the system ping command (no raw-socket privileges).
         try:
-            result = subprocess.run(["ping", "-n", "1", ip], capture_output=True, text=True, timeout=5)
-            output = result.stdout
-            # Parse time=XXms from output
-            import re
-            match = re.search(r"time[=<]\s*(\d+\.?\d*)\s*ms", output)
+            if platform.system() == "Windows":
+                command = ["ping", "-n", "1", "-w", str(int(config.PING_TIMEOUT * 1000)), ip]
+            else:
+                command = ["ping", "-c", "1", "-W", str(int(config.PING_TIMEOUT)), ip]
+
+            result = subprocess.run(command, capture_output=True, text=True, timeout=5)
+            # Parse time=XXms from either Windows or Linux output.
+            match = re.search(r"time[=<]\s*(\d+\.?\d*)\s*ms", result.stdout)
             if match:
                 return float(match.group(1))
             else:
