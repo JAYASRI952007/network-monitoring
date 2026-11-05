@@ -1,0 +1,27 @@
+# Version control / local tooling
+.git
+.gitignore
+.vscode
+.idea
+
+# Python environment (installed inside the image instead)
+venv
+wheels
+__pycache__
+*.py[cod]
+*.egg-info
+
+# Runtime data must come from the volume, not the build context
+monitor.db
+*.db
+*.db-journal
+*.log
+
+# Secrets
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Docs
+DEPLOY.md

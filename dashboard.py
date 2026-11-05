@@ -6,6 +6,7 @@ import plotly.express as px
 from datetime import datetime
 import time
 import config
+from db_manager import init_db
 
 st.set_page_config(
     page_title="Network Monitoring Dashboard",
@@ -90,6 +91,9 @@ def load_incidents():
 st.title("🛰️ Network Monitoring Dashboard")
 st.caption(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
+# Safe on every run: creates tables only if they do not exist yet.
+init_db()
+
 latest = load_latest_status()
 
 total_devices = len(latest)
@@ -133,7 +137,7 @@ display_df = latest.rename(columns={
 })
 
 styled = display_df.style.map(style_status, subset=["Status"])
-st.dataframe(styled, use_container_width=True, hide_index=True)
+st.dataframe(styled, width="stretch", hide_index=True)
 
 st.subheader("📈 Response Time Trend")
 
@@ -161,7 +165,7 @@ if not history.empty:
         xaxis_title="Time",
         yaxis_title="Response Time (ms)"
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 else:
     st.info("No history data yet — run monitor.py to start collecting data.")
 
@@ -176,7 +180,7 @@ fig2 = px.bar(
     labels={"device_name": "Device", "packet_loss_percent": "Packet Loss (%)"}
 )
 fig2.update_layout(template="plotly_dark", height=350, margin=dict(l=20, r=20, t=30, b=20))
-st.plotly_chart(fig2, use_container_width=True)
+st.plotly_chart(fig2, width="stretch")
 
 st.subheader("🕒 Incident History")
 
@@ -190,8 +194,10 @@ if not incidents.empty:
         "duration_seconds": "Duration (s)"
     })
     incidents_display["Recovered"] = incidents_display["Recovered"].fillna("Ongoing")
-    incidents_display["Duration (s)"] = incidents_display["Duration (s)"].fillna("—")
-    st.dataframe(incidents_display, use_container_width=True, hide_index=True)
+    incidents_display["Duration (s)"] = incidents_display["Duration (s)"].map(
+        lambda value: "—" if pd.isna(value) else f"{float(value):.1f}"
+    )
+    st.dataframe(incidents_display, width="stretch", hide_index=True)
 else:
     st.info("No incidents recorded yet.")
 

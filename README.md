@@ -71,6 +71,20 @@ streamlit run dashboard.py
 http://localhost:8501
 ```
 
+## 🐳 Deploy with Docker (VPS)
+
+This repository ships a production Docker setup that runs both processes
+(`monitor.py` + the Streamlit dashboard) under Supervisor, keeps SQLite on a
+persistent volume, and puts Caddy in front for automatic HTTPS and basic
+authentication.
+
+See **[DEPLOY.md](DEPLOY.md)** for the full step-by-step guide.
+
+```bash
+cp .env.example .env   # set SITE_ADDRESS and ADMIN_PASSWORD_HASH
+docker compose up -d --build
+```
+
 ## 📊 How It Works
 
 1. Every `PING_INTERVAL` seconds, the monitor pings each configured device.

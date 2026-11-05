@@ -1,0 +1,36 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      DB_PATH: /data/monitor.db
+    volumes:
+      - monitor-data:/data
+    # Raw ICMP sockets are required by ping3.
+    cap_add:
+      - NET_RAW
+    expose:
+      - "8501"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?Set SITE_ADDRESS in .env}
+      ADMIN_USER: ${ADMIN_USER:?Set ADMIN_USER in .env}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:?Set ADMIN_PASSWORD_HASH in .env}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  monitor-data:
+  caddy-data:
+  caddy-config:
