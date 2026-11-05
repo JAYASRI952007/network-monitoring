@@ -58,11 +58,7 @@ git clone https://github.com/JAYASRI952007/network-monitoring.git
 cd network-monitoring
 ```
 
-The repository is **private**, so the server needs credentials:
-
-- easiest: temporarily make the repo public, or
-- authenticate Git on the server with a GitHub token / deploy key, or
-- copy the folder from your computer with `scp -r`.
+The repository is **public**, so no credentials are needed for the clone.
 
 ---
 
