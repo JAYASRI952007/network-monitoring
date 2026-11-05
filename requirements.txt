@@ -1,0 +1,4 @@
+ping3>=4.0.8
+streamlit>=1.38.0
+pandas>=2.2.2
+plotly>=5.24.0

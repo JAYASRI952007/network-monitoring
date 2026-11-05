@@ -1,0 +1,23 @@
+# Virtual environment / installed packages
+venv/
+wheels/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Generated monitoring data
+monitor.db
+*.db-journal
+*.log
+
+# Local secrets
+.env
+.streamlit/secrets.toml
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
