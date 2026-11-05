@@ -78,12 +78,20 @@ This repository ships a production Docker setup that runs both processes
 persistent volume, and puts Caddy in front for automatic HTTPS and basic
 authentication.
 
-See **[DEPLOY.md](DEPLOY.md)** for the full step-by-step guide.
+On any fresh Ubuntu server, one command does everything — Docker install,
+hostname detection, login creation, build and launch:
 
 ```bash
-cp .env.example .env   # set SITE_ADDRESS and ADMIN_PASSWORD_HASH
-docker compose up -d --build
+git clone https://github.com/JAYASRI952007/network-monitoring.git
+cd network-monitoring
+sudo bash deploy/setup.sh
 ```
+
+You end up with a single permanent HTTPS link:
+`https://monitor.<YOUR_SERVER_IP>.sslip.io`
+
+See **[DEPLOY.md](DEPLOY.md)** for the full guide, manual steps and
+troubleshooting.
 
 ## 📊 How It Works
 

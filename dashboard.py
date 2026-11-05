@@ -56,17 +56,30 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def load_latest_status():
-    """Gets the most recent status for each device."""
+    """Gets the most recent status for each device currently in config.DEVICES."""
+    names = [device["name"] for device in config.DEVICES]
+    if not names:
+        return pd.DataFrame(
+            columns=[
+                "device_name", "ip", "status", "response_time_ms",
+                "packet_loss_percent", "checked_at",
+            ]
+        )
+
+    placeholders = ", ".join("?" for _ in names)
     conn = sqlite3.connect(config.DB_PATH)
-    query = """
+    query = f"""
         SELECT device_name, ip, status, response_time_ms, packet_loss_percent, checked_at
         FROM status_log
-        WHERE id IN (
-            SELECT MAX(id) FROM status_log GROUP BY device_name
-        )
+        WHERE device_name IN ({placeholders})
+          AND id IN (
+              SELECT MAX(id) FROM status_log
+              WHERE device_name IN ({placeholders})
+              GROUP BY device_name
+          )
         ORDER BY device_name
     """
-    df = pd.read_sql_query(query, conn)
+    df = pd.read_sql_query(query, conn, params=names + names)
     conn.close()
     return df
 
